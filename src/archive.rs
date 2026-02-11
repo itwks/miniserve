@@ -251,20 +251,37 @@ where
             let current_entry_name = entry_path.file_name().ok_or_else(|| {
                 RuntimeError::InvalidPathError("Invalid file or directory name".to_string())
             })?;
-            let relative_path = zip_directory.join(current_entry_name).into_os_string();
+
+            // To let every software correctly parse the file structure in ZIP files that are produced
+            // on any platform (esp. Windows), always use backslashes. The documentation:
+            // https://users.cs.jmu.edu/buchhofp/forensics/formats/pkzip.html
+            let relative_path = if cfg!(windows) {
+                let branch = zip_directory
+                    .as_os_str()
+                    .to_string_lossy()
+                    .trim_end_matches(r"\") // every branch ends with two backslashes "\\".
+                    .replace(r"\", "/"); // every branch uses backslash "\" as path separators.
+                let leaf = current_entry_name.to_string_lossy();
+                format!("{branch}/{leaf}") // construct a Unix-style path in the simplest way.
+            } else {
+                zip_directory
+                    .join(current_entry_name)
+                    .into_os_string()
+                    .to_string_lossy()
+                    .into_owned()
+            };
+
             if entry_metadata.is_file() {
                 let mut f = File::open(&entry_path)
                     .map_err(|e| RuntimeError::IoError("Could not open file".to_string(), e))?;
                 f.read_to_end(&mut buffer).map_err(|e| {
                     RuntimeError::IoError("Could not read from file".to_string(), e)
                 })?;
-                zip_writer
-                    .start_file(relative_path.to_string_lossy(), options)
-                    .map_err(|_| {
-                        RuntimeError::ArchiveCreationDetailError(
-                            "Could not add file path to ZIP".to_string(),
-                        )
-                    })?;
+                zip_writer.start_file(relative_path, options).map_err(|_| {
+                    RuntimeError::ArchiveCreationDetailError(
+                        "Could not add file path to ZIP".to_string(),
+                    )
+                })?;
                 zip_writer.write(buffer.as_ref()).map_err(|_| {
                     RuntimeError::ArchiveCreationDetailError(
                         "Could not write file to ZIP".to_string(),
@@ -273,7 +290,7 @@ where
                 buffer.clear();
             } else if entry_metadata.is_dir() {
                 zip_writer
-                    .add_directory(relative_path.to_string_lossy(), options)
+                    .add_directory(relative_path, options)
                     .map_err(|_| {
                         RuntimeError::ArchiveCreationDetailError(
                             "Could not add directory path to ZIP".to_string(),
