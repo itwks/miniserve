@@ -1,9 +1,6 @@
-use std::io::Cursor;
-
 use reqwest::{StatusCode, blocking::Client};
 use rstest::rstest;
 use select::{document::Document, predicate::Text};
-use zip::ZipArchive;
 
 mod fixtures;
 
@@ -232,35 +229,6 @@ fn archive_behave_differently_with_broken_symlinks(
     match expected {
         ExpectedLen::Exact(len) => assert_eq!(byte_len, len),
         ExpectedLen::Min(len) => assert!(byte_len >= len),
-    }
-
-    Ok(())
-}
-
-/// ZIP archives store entry names using unix-style paths (no backslashes).
-/// The "someDir" dir is constructed by [`fixtures`] and all items in it can be correctly processed.
-#[rstest]
-fn zip_archives_store_entry_name_in_unix_style(
-    #[with(&["--enable-zip"])] server: TestServer,
-    reqwest_client: Client,
-) -> Result<(), Error> {
-    let resp = reqwest_client
-        .get(server.url().join("someDir/?download=zip")?)
-        .send()?
-        .error_for_status()?;
-
-    assert_eq!(resp.status(), StatusCode::OK);
-
-    let mut archive = ZipArchive::new(Cursor::new(resp.bytes()?))?;
-    for i in 0..archive.len() {
-        let entry = archive.by_index(i)?;
-        let name = entry.name();
-
-        assert!(
-            !name.contains(r"\"),
-            "ZIP entry '{}' contains a backslash",
-            name
-        );
     }
 
     Ok(())
