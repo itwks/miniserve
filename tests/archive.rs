@@ -71,16 +71,14 @@ fn assert_link_presence(document: &Document, present: &[&str], absent: &[&str]) 
     for text in present {
         assert!(
             contains_text(document, text),
-            "Expected link text '{}' to be present",
-            text
+            "Expected link text '{text}' to be present",
         );
     }
 
     for text in absent {
         assert!(
             !contains_text(document, text),
-            "Expected link text '{}' to be absent",
-            text
+            "Expected link text '{text}' to be absent",
         );
     }
 }
