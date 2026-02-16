@@ -253,7 +253,7 @@ where
             })?;
 
             // To let every software correctly parse the file structure in ZIP files that are produced
-            // on any platform (esp. Windows), always use backslashes. The documentation:
+            // on any platform (esp. Windows), always use forward slashes. The documentation:
             // https://users.cs.jmu.edu/buchhofp/forensics/formats/pkzip.html
             let relative_path = if cfg!(windows) {
                 let branch = zip_directory
