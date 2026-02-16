@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+
+## [0.33.0] - 2026-02-16
 - Add `--log-color` to explicitly control when to print colors [#1529](https://github.com/svenstaro/miniserve/pull/1529) (thanks @MrCroxx)
 - Fix `--rm-files` not working with `--route-preifx` [#1531](https://github.com/svenstaro/miniserve/pull/1531) (thanks @Jianchi-Chen)
 - Add illumos builds [#1543](https://github.com/svenstaro/miniserve/pull/1543)
@@ -240,7 +242,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Some theme related bug fixes (thanks @boastful-squirrel)
 
 <!-- next-url -->
-[Unreleased]: https://github.com/svenstaro/miniserve/compare/v0.32.0...HEAD
+[Unreleased]: https://github.com/svenstaro/miniserve/compare/v0.33.0...HEAD
+[0.33.0]: https://github.com/svenstaro/miniserve/compare/v0.32.0...v0.33.0
 [0.32.0]: https://github.com/svenstaro/miniserve/compare/v0.31.0...v0.32.0
 [0.31.0]: https://github.com/svenstaro/miniserve/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/svenstaro/miniserve/compare/v0.29.0...v0.30.0
